@@ -9,10 +9,18 @@ class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
   bool get isInitialized => _initialized;
 
   @override
-  Future initialize(double productId, [String nonce = "borneo_security_default_nonce"]) async {
-    return methodChannel.invokeMethod("initialize", {"project_id": productId, "nonce": base64Encode(nonce.codeUnits)}).then((value) {
-      _initialized = value ?? false;
-    });
+  Future initialize(
+    double productId, [
+    String nonce = "borneo_security_default_nonce",
+  ]) async {
+    return methodChannel
+        .invokeMethod("initialize", {
+          "project_id": productId,
+          "nonce": base64Encode(nonce.codeUnits),
+        })
+        .then((value) {
+          _initialized = value ?? false;
+        });
   }
 
   @override

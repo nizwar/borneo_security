@@ -17,6 +17,9 @@ class BorneoMockLocationSecurity extends BorneoMockApps {
 
   @override
   Future<bool> isMockEnabled() async {
-    return methodChannel.invokeMethod("isMockEnabled").then<bool>((value) => value).catchError((e) => false);
+    return methodChannel
+        .invokeMethod("isMockEnabled")
+        .then<bool>((value) => value)
+        .catchError((e) => false);
   }
 }

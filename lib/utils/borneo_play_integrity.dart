@@ -13,7 +13,7 @@ abstract class BorneoPlayIntegrityInterface {
   bool get isInitialized => false;
 
   /// Initializes the Play Integrity API with the given `productId` and `nonce`.
-  /// 
+  ///
   /// Only able to be called once.
   Future initialize(double productId, [String nonce = ""]) async {
     throw UnimplementedError('initialize() has not been implemented.');
