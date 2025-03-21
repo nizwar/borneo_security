@@ -15,12 +15,12 @@ abstract class BorneoPlayIntegrityInterface {
   /// Initializes the Play Integrity API with the given `productId` and `nonce`.
   ///
   /// Only able to be called once.
-  Future initialize(double productId, [String nonce = ""]) async {
+  Future<bool> initialize(double productId, [String nonce = ""]) async {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 
   /// Retrieves the integrity token from the Play Integrity API.
-  Future getIntegrityToken() async {
+  Future<String> getIntegrityToken() async {
     throw UnimplementedError('getIntegrityToken() has not been implemented.');
   }
 }
