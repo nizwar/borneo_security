@@ -1,6 +1,6 @@
 # Borneo Security
 
-Borneo Security is a library designed to help secure your Flutter app from mocker apps and ensure the device's integrity using the Play Integrity API. This library provides methods to detect mocked apps and verify the device's authenticity.
+Borneo Security is a library designed to help secure your Flutter app from mocker apps, ensure the device's integrity using the Play Integrity API, and manage installed app packages. This library provides methods to detect mocked apps, verify the device's authenticity, and retrieve app package information.
 
 **Note: This package only supports Android.**
 
@@ -9,6 +9,7 @@ Borneo Security is a library designed to help secure your Flutter app from mocke
 - Detect mocked apps installed on the device.
 - Check if mock detection is enabled.
 - Integrate with the Play Integrity API to verify device integrity.
+- Retrieve installed app packages and their details.
 
 ## Installation
 
@@ -51,14 +52,16 @@ import 'package:borneo_security/borneo_security.dart';
 final playIntegrity = BorneoPlayIntegrity();
 
 Future<void> checkPlayIntegrity() async {
-  await playIntegrity.initialize(12345);
+  bool initialized = await playIntegrity.initialize(12345);
   var integrityToken = await playIntegrity.getIntegrityToken();
 
+  print('Initialized: $initialized');
   print('Integrity token: $integrityToken');
 }
 ```
 
-### Server-side Integration
+
+#### Server-side Integration
 Add this package 
 
 ```sh composer require google/apiclient:^2.12.1```
@@ -106,28 +109,39 @@ public function performCheck(Request $request) {
 }
 ```
 
-## Example
 
-Here is an example of how to use the `BorneoMockLocationSecurity` and `BorneoPlayIntegrity` classes:
+### Managing Installed App Packages
+
+`BorneoPackages` provides a comprehensive API to interact with installed applications on a device. Beyond fetching app names, package names, and icons, BorneoPackages also allows you to retrieve additional details such as application permissions, signing certificates, and more.
+
+To retrieve installed app packages and their icons, use the `BorneoPackages` class:
 
 ```dart
-void main() async {
-  final mockAppDetector = BorneoMockLocationSecurity();
-  final playIntegrity = BorneoPlayIntegrity();
+import 'package:borneo_security/borneo_security.dart';
 
-  // Initialize Play Integrity
-  await playIntegrity.initialize(12345);
+final packageManager = BorneoPackages();
 
-  // Check for mocked apps
-  bool hasMockedApps = await mockAppDetector.hasMockedApps();
-  print('Has mocked apps: $hasMockedApps');
+Future<void> fetchInstalledApps() async {
+  List<AppPackage> apps = await packageManager.getInstalledApps(true);
+  for (var app in apps) {
+    print('App: ${app.name}, Package: ${app.packageName}');
+  }
 
-  // Get integrity token
-  var integrityToken = await playIntegrity.getIntegrityToken();
-  print('Integrity token: $integrityToken');
+  Uint8List icon = await packageManager.getIcon('com.example.app');
+  print('Icon data: $icon');
+
+  AppPackage appInfo = await packageManager.getPackageInfo('com.example.app');
+  print('App Info: ${appInfo.name}, Version: ${appInfo.version}');
 }
 ```
 
-## License
+## What's New
 
+### Version 1.1.0
+- Added `BorneoPackages` class for managing installed app packages.
+- Added `getInstalledApps`, `getIcon`, and `getPackageInfo` methods for package management.
+- Improved Play Integrity initialization to return a boolean.
+- Updated documentation for all classes and methods.
+
+## License
 This project is licensed under the MIT License.
