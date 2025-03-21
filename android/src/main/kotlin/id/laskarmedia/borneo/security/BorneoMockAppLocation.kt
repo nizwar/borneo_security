@@ -4,17 +4,16 @@ import android.app.Service
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.location.LocationRequest
-import android.location.provider.ProviderProperties
 import android.os.Build
 import android.provider.Settings
+
 
 class BorneoMockAppLocation(val context: Context) {
     fun hasMockAppLocation(): Boolean {
         return mockAppLocationList().isNotEmpty()
     }
 
-    fun mockAppLocationList(): List<String> {
+    fun mockAppLocationList(): List<HashMap<String, Any?>> {
         val pm = context.packageManager
         val installedApps = pm.getInstalledApplications(0)
         return installedApps.filter { app ->
@@ -26,7 +25,16 @@ class BorneoMockAppLocation(val context: Context) {
                 }
             }
             return@filter false
-        }.map { it.packageName }
+        }.map {
+            HashMap<String, Any?>().apply {
+                put("packageName", it.packageName)
+                pm.getPackageInfo(it.packageName, PackageManager.GET_PERMISSIONS)
+                    ?.let { packageInfo ->
+                        put("permissions", packageInfo.requestedPermissions)
+                    }
+
+            }
+        }
     }
 
     fun isMockEnabled(): Boolean {

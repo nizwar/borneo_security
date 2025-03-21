@@ -7,6 +7,7 @@ import io.flutter.plugin.common.MethodChannel
 import android.content.pm.PackageManager
 import android.util.Log
 import id.laskarmedia.borneo.security.BorneoMockAppLocation
+import id.laskarmedia.borneo.security.BorneoPackages
 import id.laskarmedia.borneo.security.BorneoPlayIntegrity
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 
@@ -19,19 +20,22 @@ class BorneoSecurityPlugin : FlutterPlugin {
     lateinit var mockAppLocationMethod: MethodChannel
     lateinit var mockAppLocator: BorneoMockAppLocation
 
+    lateinit var packagesMethod: MethodChannel
+    lateinit var packages: BorneoPackages
+
     lateinit var playIntegrityMethod: MethodChannel
     lateinit var playIntegrity: BorneoPlayIntegrity
-
-    private var initialized: Boolean = false
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         playIntegrityMethod =
             MethodChannel(flutterPluginBinding.binaryMessenger, "$CHANNEL/playIntegrity")
         mockAppLocationMethod =
             MethodChannel(flutterPluginBinding.binaryMessenger, "$CHANNEL/mockAppLocation")
+        packagesMethod = MethodChannel(flutterPluginBinding.binaryMessenger, "$CHANNEL/packages")
 
         mockAppLocator = BorneoMockAppLocation(flutterPluginBinding.applicationContext)
         playIntegrity = BorneoPlayIntegrity(flutterPluginBinding.applicationContext)
+        packages = BorneoPackages(flutterPluginBinding.applicationContext)
 
         mockAppLocationMethod.setMethodCallHandler { call, result ->
             try {
@@ -56,11 +60,48 @@ class BorneoSecurityPlugin : FlutterPlugin {
                 result.error("mock_app_location", e.message, null)
             }
         }
+        packagesMethod.setMethodCallHandler { call, result ->
+            try {
+                when (call.method) {
+                    "installedApps" -> {
+                        val arguments = call.arguments as Map<*, *>
+                        result.success(packages.installedApps(arguments["fetch_icons"] as Boolean))
+                    }
+
+                    "getIcon" -> {
+                        val arguments = call.arguments as Map<*, *>
+                        val output = packages.getIcon(arguments["package_name"] as String);
+                        if (output != null) {
+                            result.success(output)
+                        } else {
+                            result.error("packages", "Package not found", null)
+                        }
+                    }
+
+                    "getPackageInfo" -> {
+                        val arguments = call.arguments as Map<*, *>
+                        val output = packages.getPackageInfo(arguments["package_name"] as String);
+                        if (output != null) {
+                            result.success(packages.getPackageInfo(arguments["package_name"] as String))
+                        } else {
+                            result.error("packages", "Package not found", null)
+                        }
+                    }
+
+                    else -> {
+                        result.notImplemented()
+                    }
+                }
+            } catch (e: Exception) {
+                result.error("packages", e.message, null)
+            }
+        }
+
         playIntegrityMethod.setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
                     "initialize" -> {
-                        val arguments = call.arguments as Map<*, *>;
+                        val arguments = call.arguments as Map<*, *>
                         playIntegrity.initialize(
                             (arguments["project_id"] as Double).toLong(),
                             arguments["nonce"] as String
