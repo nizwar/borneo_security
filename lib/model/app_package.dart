@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 /// A class that represents an application package.
-/// 
+///
 /// This class can be used to define and manage the properties
 /// and behaviors associated with an application package.
 class AppPackage {
@@ -81,9 +81,15 @@ class AppPackage {
       installer: map['installer'],
       versionCode: map['versionCode'],
       versionName: map['versionName'],
-      firstInstallTime: map['firstInstallTime'] != null ? DateTime.fromMillisecondsSinceEpoch(map['firstInstallTime']) : null,
-      lastUpdateTime: map['lastUpdateTime'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastUpdateTime']) : null,
-      signingCertificates: List<Signature>.from((map['signing_certificates'] ?? []).map((e) => Signature.fromMap(Map<String, dynamic>.from(e)))),
+      firstInstallTime: map['firstInstallTime'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['firstInstallTime'])
+          : null,
+      lastUpdateTime: map['lastUpdateTime'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastUpdateTime'])
+          : null,
+      signingCertificates: List<Signature>.from(
+          (map['signing_certificates'] ?? [])
+              .map((e) => Signature.fromMap(Map<String, dynamic>.from(e)))),
       permissions: List<String>.from(map['permissions'] ?? []),
     );
   }
@@ -110,7 +116,7 @@ class AppPackage {
 }
 
 /// A class representing a digital signature.
-/// 
+///
 /// This class can be used to handle and manage digital signatures
 /// for secure communication or data validation purposes.
 class Signature {
@@ -172,11 +178,17 @@ class Signature {
       subjectDN: map['subjectDN'],
       issuerDN: map['issuerDN'],
       serialNumber: map['serialNumber']?.toString(),
-      notBefore: map['notBefore'] != null ? DateTime.fromMillisecondsSinceEpoch(map['notBefore']) : null,
-      notAfter: map['notAfter'] != null ? DateTime.fromMillisecondsSinceEpoch(map['notAfter']) : null,
+      notBefore: map['notBefore'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['notBefore'])
+          : null,
+      notAfter: map['notAfter'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['notAfter'])
+          : null,
       publicKeyAlgorithm: map['publicKeyAlgorithm'],
       publicKeyFormat: map['publicKeyFormat'],
-      publicKeyEncoded: map['publicKeyEncoded'] != null ? Uint8List.fromList(List<int>.from(map['publicKeyEncoded'])) : null,
+      publicKeyEncoded: map['publicKeyEncoded'] != null
+          ? Uint8List.fromList(List<int>.from(map['publicKeyEncoded']))
+          : null,
       publicKey: map['publicKey'],
       publicKeyHash: map['publicKeyHash'],
     );

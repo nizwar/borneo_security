@@ -10,18 +10,18 @@ abstract class BorneoPackagesInterface {
   /// The method channel used to invoke methods on the native platform.
   final MethodChannel methodChannel = MethodChannel('$channel/packages');
 
-    /// Retrieves a list of installed applications.
-    ///
-    /// This method returns a [Future] that resolves to a list of [AppPackage]
-    /// objects representing the installed applications on the device.
-    ///
-    /// - Parameter [fetchIcons]: A boolean flag indicating whether to fetch
-    ///   the icons of the installed applications. Defaults to `false`.
-    /// - Returns: A [Future] that resolves to a list of [AppPackage] objects.
-    ///   If the method is not implemented, it throws an [UnimplementedError].
-    Future<List<AppPackage>> getInstalledApps([bool fetchIcons = false]) {
-      throw UnimplementedError();
-    }
+  /// Retrieves a list of installed applications.
+  ///
+  /// This method returns a [Future] that resolves to a list of [AppPackage]
+  /// objects representing the installed applications on the device.
+  ///
+  /// - Parameter [fetchIcons]: A boolean flag indicating whether to fetch
+  ///   the icons of the installed applications. Defaults to `false`.
+  /// - Returns: A [Future] that resolves to a list of [AppPackage] objects.
+  ///   If the method is not implemented, it throws an [UnimplementedError].
+  Future<List<AppPackage>> getInstalledApps([bool fetchIcons = false]) {
+    throw UnimplementedError();
+  }
 
   /// Retrieves the icon of the specified package.
   ///

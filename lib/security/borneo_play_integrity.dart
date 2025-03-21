@@ -14,8 +14,12 @@ class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
   ///
   /// Returns `true` if initialization is successful, otherwise `false`.
   @override
-  Future<bool> initialize(double projectId, [String nonce = "borneo_security_default_nonce"]) async {
-    return methodChannel.invokeMethod("initialize", {"project_id": projectId, "nonce": base64Encode(nonce.codeUnits)}).then((value) {
+  Future<bool> initialize(double projectId,
+      [String nonce = "borneo_security_default_nonce"]) async {
+    return methodChannel.invokeMethod("initialize", {
+      "project_id": projectId,
+      "nonce": base64Encode(nonce.codeUnits)
+    }).then((value) {
       _initialized = value ?? false;
       return _initialized;
     });
@@ -26,6 +30,8 @@ class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
   /// Returns the integrity token as a [String].
   @override
   Future<String> getIntegrityToken() async {
-    return methodChannel.invokeMethod("getPlayIntegrityToken").then((value) => value.toString());
+    return methodChannel
+        .invokeMethod("getPlayIntegrityToken")
+        .then((value) => value.toString());
   }
 }
