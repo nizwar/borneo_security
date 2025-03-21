@@ -14,15 +14,9 @@ abstract class BorneoMockApps {
     throw UnimplementedError('getMockedApps() has not been implemented.');
   }
 
-  /// Retrieves a list of mocked apps installed on the device.
-  Future<List<String>> installedByGoogle() {
-    throw UnimplementedError('installedByGoogle() has not been implemented.');
-  }
-
   /// Checks if there are any mocked apps installed on the device.
   ///
   /// Returns `true` if there are mocked apps, otherwise `false`.
-
   Future<bool> hasMockedApps() {
     throw UnimplementedError('hasMockedApps() has not been implemented.');
   }
