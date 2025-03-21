@@ -13,10 +13,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Borneo Security')),
+      appBar: AppBar(
+        title: const Text('Borneo Security'),
+      ),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton(
               onPressed: () async {
@@ -28,26 +30,14 @@ class App extends StatelessWidget {
                 showDialog(
                   // ignore: use_build_context_synchronously
                   context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: const Text('Mocked Apps'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Has Mocked Apps: $hasMockedApps'),
-                            Text('Mocked Apps:\n${mockedApps.join('\n')}'),
-                            Text(
-                              'Is Mock Settings Enabled: $isMockSettingsEnabled',
-                            ),
-                          ],
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Close'),
-                          ),
-                        ],
-                      ),
+                  builder: (context) => AlertDialog(
+                    title: const Text('Mocked Apps'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [Text('Has Mocked Apps: $hasMockedApps'), Text('Mocked Apps:\n${mockedApps.join('\n')}'), Text('Is Mock Settings Enabled: $isMockSettingsEnabled')],
+                    ),
+                    actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
+                  ),
                 );
               },
               child: const Text('Check Mocked Apps'),
@@ -56,28 +46,72 @@ class App extends StatelessWidget {
               onPressed: () async {
                 var integrityChecker = BorneoPlayIntegrity();
                 //Write your own product id and nonce here
-                await integrityChecker.initialize(0).catchError((_) {});
-                final hasMockedApps = await integrityChecker
-                    .getIntegrityToken()
-                    .showCustomProgressDialog(context);
+                await integrityChecker.initialize(0).catchError((_) => false);
+                final integrityToken = await integrityChecker.getIntegrityToken().showCustomProgressDialog(context);
                 AlertDialog(
                   title: Text("Play Integrity Token"),
                   content: InkWell(
                     onTap: () {
-                      Clipboard.setData(ClipboardData(text: hasMockedApps));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Copied to clipboard")),
-                      );
+                      Clipboard.setData(ClipboardData(text: integrityToken ?? "No token"));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Copied to clipboard")));
                       Navigator.pop(context);
                     },
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: SingleChildScrollView(child: Text(hasMockedApps)),
-                    ),
+                    child: Padding(padding: EdgeInsets.all(10), child: SingleChildScrollView(child: Text(integrityToken ?? "No token"))),
                   ),
                 ).show(context);
               },
               child: const Text('Check Integrity'),
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: BorneoPackages().getInstalledApps(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView(
+                        children: snapshot.data!
+                            .map(
+                              (item) => ListTile(
+                                title: Text(item.name),
+                                subtitle: Text(item.packageName),
+                                leading: FutureBuilder(
+                                  future: BorneoPackages().getIcon(item.packageName),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Image.memory(snapshot.data!);
+                                    } else {
+                                      return SizedBox.shrink();
+                                    }
+                                  },
+                                ),
+                                onTap: () {
+                                  AlertDialog(
+                                    title: Text("${item.name} Information"),
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: item
+                                            .toMap()
+                                            .entries
+                                            .map(
+                                              (e) => ListTile(
+                                                title: Text(e.key),
+                                                subtitle: Text(e.value.toString()),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ),
+                                  ).show(context);
+                                },
+                              ),
+                            )
+                            .toList());
+                  } else {
+                    return Container(height: 300, alignment: Alignment.center, child: CircularProgressIndicator());
+                  }
+                },
+              ),
             ),
           ],
         ),
