@@ -4,6 +4,7 @@ import 'package:borneo_security/interfaces/borneo_mock_apps_interface.dart';
 class BorneoMockLocationSecurity extends BorneoMockApps {
   /// Retrieves a list of mocked apps installed on the device.
   @override
+  @Deprecated("Use BorneoPackages instead.")
   Future<List<String>> getMockedApps() async {
     return methodChannel.invokeMethod("mockAppLocationList").then((value) {
       return List<String>.from(value);
@@ -14,6 +15,7 @@ class BorneoMockLocationSecurity extends BorneoMockApps {
   ///
   /// Returns `true` if mocked apps are detected, otherwise `false`.
   @override
+  @Deprecated("Use BorneoPackages instead.")
   Future<bool> hasMockedApps() async {
     return methodChannel.invokeMethod("hasMockAppLocation").then((value) {
       return value;
@@ -25,9 +27,6 @@ class BorneoMockLocationSecurity extends BorneoMockApps {
   /// Returns `true` if mock location is enabled, otherwise `false`.
   @override
   Future<bool> isMockEnabled() async {
-    return methodChannel
-        .invokeMethod("isMockEnabled")
-        .then<bool>((value) => value)
-        .catchError((e) => false);
+    return methodChannel.invokeMethod("isMockEnabled").then<bool>((value) => value);
   }
 }
