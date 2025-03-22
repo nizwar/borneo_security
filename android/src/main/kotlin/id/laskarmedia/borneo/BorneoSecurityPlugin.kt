@@ -49,7 +49,7 @@ class BorneoSecurityPlugin : FlutterPlugin {
                     }
 
                     "isMockEnabled" -> {
-                        try{
+                        try {
                             result.success(mockAppLocator.isMockEnabled())
                         } catch (e: Exception) {
                             result.error("mock_app_location", e.message, null)
@@ -106,20 +106,26 @@ class BorneoSecurityPlugin : FlutterPlugin {
                 when (call.method) {
                     "initialize" -> {
                         val arguments = call.arguments as Map<*, *>
-                        playIntegrity.initialize(
-                            (arguments["project_id"] as Double).toLong(),
-                            arguments["nonce"] as String
-                        )
-                        result.success(null)
+                        try {
+                            playIntegrity.initialize((arguments["cloud_project_number"] as Double).toLong()).addOnSuccessListener {
+                                result.success(true)
+                            }.addOnFailureListener { e ->
+                                result.error("play_integrity", e.message, null)
+                            }
+                        } catch (e: Exception) {
+                            result.error("play_integrity", e.message, null)
+                        }
                     }
 
                     "getPlayIntegrityToken" -> {
                         try {
-                            playIntegrity.getPlayIntegrityToken().addOnSuccessListener { response ->
-                                result.success(response.token())
-                            }.addOnFailureListener { e ->
-                                result.error("play_integrity", e.message, null)
-                            }
+                            val arguments = call.arguments as Map<*, *>
+                            playIntegrity.getPlayIntegrityToken(arguments["hash"] as String)
+                                .addOnSuccessListener { response ->
+                                    result.success(response.token())
+                                }.addOnFailureListener { e ->
+                                    result.error("play_integrity", e.message, null)
+                                }
                         } catch (e: Exception) {
                             result.error("play_integrity", e.message, null)
                         }
