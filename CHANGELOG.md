@@ -1,3 +1,7 @@
+## 1.1.1
+* Deprecate `getMockedApps` and `hasMockedApps`.
+* Add checkLocationPermission once calling `isMockEnabled`
+
 ## 1.1.0
 * Added `BorneoPackages` class for managing installed app packages.
 * Added `getInstalledApps`, `getIcon`, and `getPackageInfo` methods for package management.

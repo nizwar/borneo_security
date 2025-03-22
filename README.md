@@ -32,8 +32,8 @@ import 'package:borneo_security/borneo_security.dart';
 final mockAppDetector = BorneoMockLocationSecurity();
 
 Future<void> checkMockedApps() async {
-  List<String> mockedApps = await mockAppDetector.getMockedApps();
-  bool hasMockedApps = await mockAppDetector.hasMockedApps();
+  List<String> mockedApps = await mockAppDetector.getMockedApps(); //deprecated
+  bool hasMockedApps = await mockAppDetector.hasMockedApps(); //deprecated
   bool isMockEnabled = await mockAppDetector.isMockEnabled();
 
   print('Mocked apps: $mockedApps');
@@ -134,14 +134,6 @@ Future<void> fetchInstalledApps() async {
   print('App Info: ${appInfo.name}, Version: ${appInfo.version}');
 }
 ```
-
-## What's New
-
-### Version 1.1.0
-- Added `BorneoPackages` class for managing installed app packages.
-- Added `getInstalledApps`, `getIcon`, and `getPackageInfo` methods for package management.
-- Improved Play Integrity initialization to return a boolean.
-- Updated documentation for all classes and methods.
 
 ## License
 This project is licensed under the MIT License.
