@@ -13,9 +13,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Borneo Security'),
-      ),
+      appBar: AppBar(title: const Text('Borneo Security')),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -23,9 +21,14 @@ class App extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 var mockChecker = BorneoMockLocationSecurity();
-                final hasMockedApps = await mockChecker.hasMockedApps();
-                final mockedApps = await mockChecker.getMockedApps();
-                final isMockSettingsEnabled = await mockChecker.isMockEnabled();
+                var packages = BorneoPackages();
+                final mockedApps = await packages.getInstalledApps().then(
+                  (value) {
+                    return value.where((item) => item.permissions.map((item) => item.toLowerCase()).contains("android.permission.access_mock_location")).map((item) => item.packageName).toList();
+                  },
+                ).showCustomProgressDialog(context);
+                final hasMockedApps = mockedApps?.isNotEmpty ?? false;
+                final isMockSettingsEnabled = await mockChecker.isMockEnabled().catchError((e) => false);
 
                 showDialog(
                   // ignore: use_build_context_synchronously
@@ -34,17 +37,9 @@ class App extends StatelessWidget {
                     title: const Text('Mocked Apps'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('Has Mocked Apps: $hasMockedApps'),
-                        Text('Mocked Apps:\n${mockedApps.join('\n')}'),
-                        Text('Is Mock Settings Enabled: $isMockSettingsEnabled')
-                      ],
+                      children: [Text('Has Mocked Apps: $hasMockedApps'), Text('Mocked Apps:\n${mockedApps?.join('\n')}'), Text('Is Mock Settings Enabled: $isMockSettingsEnabled')],
                     ),
-                    actions: [
-                      TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Close'))
-                    ],
+                    actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
                   ),
                 );
               },
@@ -55,23 +50,16 @@ class App extends StatelessWidget {
                 var integrityChecker = BorneoPlayIntegrity();
                 //Write your own product id and nonce here
                 await integrityChecker.initialize(0).catchError((_) => false);
-                final integrityToken = await integrityChecker
-                    .getIntegrityToken()
-                    .showCustomProgressDialog(context);
+                final integrityToken = await integrityChecker.getIntegrityToken().showCustomProgressDialog(context);
                 AlertDialog(
                   title: Text("Play Integrity Token"),
                   content: InkWell(
                     onTap: () {
-                      Clipboard.setData(
-                          ClipboardData(text: integrityToken ?? "No token"));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Copied to clipboard")));
+                      Clipboard.setData(ClipboardData(text: integrityToken ?? "No token"));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Copied to clipboard")));
                       Navigator.pop(context);
                     },
-                    child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: SingleChildScrollView(
-                            child: Text(integrityToken ?? "No token"))),
+                    child: Padding(padding: EdgeInsets.all(10), child: SingleChildScrollView(child: Text(integrityToken ?? "No token"))),
                   ),
                 ).show(context);
               },
@@ -89,8 +77,7 @@ class App extends StatelessWidget {
                                 title: Text(item.name),
                                 subtitle: Text(item.packageName),
                                 leading: FutureBuilder(
-                                  future: BorneoPackages()
-                                      .getIcon(item.packageName),
+                                  future: BorneoPackages().getIcon(item.packageName),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       return Image.memory(snapshot.data!);
@@ -105,16 +92,14 @@ class App extends StatelessWidget {
                                     content: SingleChildScrollView(
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                         children: item
                                             .toMap()
                                             .entries
                                             .map(
                                               (e) => ListTile(
                                                 title: Text(e.key),
-                                                subtitle:
-                                                    Text(e.value.toString()),
+                                                subtitle: Text(e.value.toString()),
                                               ),
                                             )
                                             .toList(),
@@ -126,10 +111,7 @@ class App extends StatelessWidget {
                             )
                             .toList());
                   } else {
-                    return Container(
-                        height: 300,
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator());
+                    return Container(height: 300, alignment: Alignment.center, child: CircularProgressIndicator());
                   }
                 },
               ),
