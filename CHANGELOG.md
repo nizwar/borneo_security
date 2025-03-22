@@ -1,3 +1,6 @@
+## 1.2.0
+* Enhance play integrity (Use StandardIntegrityTokenProvider instead)
+
 ## 1.1.1
 * Deprecate `getMockedApps` and `hasMockedApps`.
 * Add checkLocationPermission once calling `isMockEnabled`

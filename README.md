@@ -51,11 +51,14 @@ import 'package:borneo_security/borneo_security.dart';
 
 final playIntegrity = BorneoPlayIntegrity();
 
-Future<void> checkPlayIntegrity() async {
-  bool initialized = await playIntegrity.initialize(12345);
-  var integrityToken = await playIntegrity.getIntegrityToken();
+@override
+void initState(){
+  playIntegrity.initialize(12345);
+  super.initState();
+}
 
-  print('Initialized: $initialized');
+Future<void> checkPlayIntegrity() async {
+  var integrityToken = await playIntegrity.getIntegrityToken();
   print('Integrity token: $integrityToken');
 }
 ```

@@ -24,9 +24,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    integrityChecker.initialize(0).catchError((e) => false).then((value) {
-      print("Integrity initialized: $value");
-    });
+    integrityChecker.initialize(0).catchError((e) => false).then((value) {});
     packages.getInstalledApps(true).then((value) {
       setState(() {
         apps = value;
@@ -45,11 +43,16 @@ class _AppState extends State<App> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                final mockedApps =
-                    apps.where((item) => item.permissions.map((item) => item.toLowerCase()).contains("android.permission.access_mock_location")).map((item) => item.packageName).toList();
+                final mockedApps = apps
+                    .where((item) => item.permissions
+                        .map((item) => item.toLowerCase())
+                        .contains("android.permission.access_mock_location"))
+                    .map((item) => item.packageName)
+                    .toList();
 
                 final hasMockedApps = mockedApps.isNotEmpty;
-                final isMockSettingsEnabled = await mockChecker.isMockEnabled().catchError((e) => false);
+                final isMockSettingsEnabled =
+                    await mockChecker.isMockEnabled().catchError((e) => false);
 
                 showDialog(
                   context: context,
@@ -57,9 +60,17 @@ class _AppState extends State<App> {
                     title: const Text('Mocked Apps'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [Text('Has Mocked Apps: $hasMockedApps'), Text('Mocked Apps:\n${mockedApps.join('\n')}'), Text('Is Mock Settings Enabled: $isMockSettingsEnabled')],
+                      children: [
+                        Text('Has Mocked Apps: $hasMockedApps'),
+                        Text('Mocked Apps:\n${mockedApps.join('\n')}'),
+                        Text('Is Mock Settings Enabled: $isMockSettingsEnabled')
+                      ],
                     ),
-                    actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Close'))],
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Close'))
+                    ],
                   ),
                 );
               },
@@ -67,16 +78,22 @@ class _AppState extends State<App> {
             ),
             ElevatedButton(
               onPressed: () async {
-                final integrityToken = await integrityChecker.getIntegrityToken().showCustomProgressDialog(context);
+                final integrityToken = await integrityChecker
+                    .getIntegrityToken()
+                    .showCustomProgressDialog(context);
                 AlertDialog(
                   title: Text("Play Integrity Token"),
                   content: InkWell(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: integrityToken!));
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Copied to clipboard")));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Copied to clipboard")));
                       Navigator.pop(context);
                     },
-                    child: Padding(padding: EdgeInsets.all(10), child: SingleChildScrollView(child: Text(integrityToken ?? "No token"))),
+                    child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: SingleChildScrollView(
+                            child: Text(integrityToken ?? "No token"))),
                   ),
                 ).show(context);
               },
@@ -98,8 +115,16 @@ class _AppState extends State<App> {
                                     content: SingleChildScrollView(
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: item.toMap().entries.map((e) => ListTile(title: Text(e.key), subtitle: Text(e.value.toString()))).toList(),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: item
+                                            .toMap()
+                                            .entries
+                                            .map((e) => ListTile(
+                                                title: Text(e.key),
+                                                subtitle:
+                                                    Text(e.value.toString())))
+                                            .toList(),
                                       ),
                                     ),
                                   ).show(context);
@@ -108,7 +133,10 @@ class _AppState extends State<App> {
                             )
                             .toList());
                   } else {
-                    return Container(height: 300, alignment: Alignment.center, child: CircularProgressIndicator());
+                    return Container(
+                        height: 300,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator());
                   }
                 },
               ),
