@@ -49,7 +49,11 @@ class BorneoSecurityPlugin : FlutterPlugin {
                     }
 
                     "isMockEnabled" -> {
-                        result.success(mockAppLocator.isMockEnabled())
+                        try{
+                            result.success(mockAppLocator.isMockEnabled())
+                        } catch (e: Exception) {
+                            result.error("mock_app_location", e.message, null)
+                        }
                     }
 
                     else -> {

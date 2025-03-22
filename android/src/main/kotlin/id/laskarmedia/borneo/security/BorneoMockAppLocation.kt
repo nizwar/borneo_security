@@ -13,7 +13,7 @@ class BorneoMockAppLocation(val context: Context) {
         return mockAppLocationList().isNotEmpty()
     }
 
-    fun mockAppLocationList(): List<HashMap<String, Any?>> {
+    fun mockAppLocationList(): List<String> {
         val pm = context.packageManager
         val installedApps = pm.getInstalledApplications(0)
         return installedApps.filter { app ->
@@ -26,18 +26,27 @@ class BorneoMockAppLocation(val context: Context) {
             }
             return@filter false
         }.map {
-            HashMap<String, Any?>().apply {
-                put("packageName", it.packageName)
-                pm.getPackageInfo(it.packageName, PackageManager.GET_PERMISSIONS)
-                    ?.let { packageInfo ->
-                        put("permissions", packageInfo.requestedPermissions)
-                    }
-
-            }
+            it.packageName
         }
     }
 
     fun isMockEnabled(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                throw Exception("Location permission not granted")
+            }
+        } else {
+            val pm = context.packageManager
+            val hasFineLocationPermission = pm.checkPermission(android.Manifest.permission.ACCESS_FINE_LOCATION, context.packageName) == PackageManager.PERMISSION_GRANTED
+            val hasCoarseLocationPermission = pm.checkPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION, context.packageName) == PackageManager.PERMISSION_GRANTED
+            if (!hasFineLocationPermission && !hasCoarseLocationPermission) {
+                throw Exception("Location permission not granted")
+            }
+        }
+
         val lm = context.getSystemService(Service.LOCATION_SERVICE) as LocationManager
         try {
             if (lm.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null) {
@@ -51,7 +60,6 @@ class BorneoMockAppLocation(val context: Context) {
             return false
         }
 
-
-        return false;
+        return false
     }
 }
