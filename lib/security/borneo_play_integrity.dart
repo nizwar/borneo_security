@@ -3,6 +3,24 @@ import '../interfaces/constant.dart';
 
 /// A class that implements the Play Integrity API for verifying device integrity.
 class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
+  BorneoPlayIntegrity._();
+
+  static BorneoPlayIntegrity? _instance;
+
+  /// Returns the singleton instance of [BorneoPlayIntegrity].
+  ///
+  /// This ensures that only one instance of the Play Integrity API is created
+  /// throughout the application, following the singleton design pattern.
+  /// /// Usage:
+  /// ```dart
+  /// var playIntegrity1 = BorneoPlayIntegrity.instance;
+  /// var playIntegrity2 = BorneoPlayIntegrity.instance;
+  ///
+  static BorneoPlayIntegrity get instance {
+    _instance ??= BorneoPlayIntegrity._();
+    return _instance!;
+  }
+
   bool _initialized = false;
 
   /// Indicates whether the Play Integrity API has been initialized.

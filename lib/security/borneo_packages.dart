@@ -7,6 +7,24 @@ import '../model/app_package.dart';
 
 /// A class for managing installed app packages and retrieving their information.
 class BorneoPackages extends BorneoPackagesInterface {
+  BorneoPackages._();
+  static BorneoPackages? _instance;
+
+  /// Returns the singleton instance of [BorneoPackages].
+  ///
+  /// This ensures that only one instance of the BorneoPackages is created
+  /// throughout the application, following the singleton design pattern.
+  ///
+  /// Usage:
+  /// ```dart
+  /// var packages1 = BorneoPackages.instance;
+  /// var packages2 = BorneoPackages.instance;
+  /// ```
+  static BorneoPackages get instance {
+    _instance ??= BorneoPackages._();
+    return _instance!;
+  }
+
   /// Retrieves a list of installed apps on the device.
   ///
   /// If [fetchIcons] is `true`, app icons will also be fetched.

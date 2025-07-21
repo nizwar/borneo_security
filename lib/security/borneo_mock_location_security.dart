@@ -4,6 +4,24 @@ import '../interfaces/constant.dart';
 
 /// A class for detecting mocked apps and checking mock location settings.
 class BorneoMockLocationSecurity extends BorneoMockApps {
+  BorneoMockLocationSecurity._();
+  static BorneoMockLocationSecurity? _instance;
+
+  /// Returns the singleton instance of [BorneoMockLocationSecurity].
+  ///
+  /// This ensures that only one instance of the BorneoMockLocationSecurity is created
+  /// throughout the application, following the singleton design pattern.
+  ///
+  /// Usage:
+  /// ```dart
+  /// var packages1 = BorneoMockLocationSecurity.instance;
+  /// var packages2 = BorneoMockLocationSecurity.instance;
+  /// ```
+  static BorneoMockLocationSecurity get instance {
+    _instance ??= BorneoMockLocationSecurity._();
+    return _instance!;
+  }
+
   /// Retrieves a list of mocked apps installed on the device.
   @override
   @Deprecated("Use BorneoPackages instead.")
