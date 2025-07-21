@@ -1,15 +1,16 @@
 package id.laskarmedia.borneo
 
-import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-
-import android.content.pm.PackageManager
-import android.util.Log
+import android.content.Context
+import android.provider.Settings.Secure.ANDROID_ID
+import android.provider.Settings.Secure.getString
+import android.telephony.TelephonyManager
+import androidx.core.content.ContextCompat.getSystemService
 import id.laskarmedia.borneo.security.BorneoMockAppLocation
 import id.laskarmedia.borneo.security.BorneoPackages
 import id.laskarmedia.borneo.security.BorneoPlayIntegrity
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.MethodChannel
+
 
 /** BorneoSecurityPlugin */
 class BorneoSecurityPlugin : FlutterPlugin {
@@ -17,14 +18,15 @@ class BorneoSecurityPlugin : FlutterPlugin {
         const val CHANNEL = "id.laskarmedia.borneo/security"
     }
 
-    lateinit var mockAppLocationMethod: MethodChannel
-    lateinit var mockAppLocator: BorneoMockAppLocation
+    private lateinit var mockAppLocationMethod: MethodChannel
+    private lateinit var mockAppLocator: BorneoMockAppLocation
 
-    lateinit var packagesMethod: MethodChannel
-    lateinit var packages: BorneoPackages
+    private lateinit var packagesMethod: MethodChannel
+    private lateinit var packages: BorneoPackages
 
-    lateinit var playIntegrityMethod: MethodChannel
-    lateinit var playIntegrity: BorneoPlayIntegrity
+    private lateinit var playIntegrityMethod: MethodChannel
+    private lateinit var playIntegrity: BorneoPlayIntegrity
+
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         playIntegrityMethod =
@@ -40,15 +42,15 @@ class BorneoSecurityPlugin : FlutterPlugin {
         mockAppLocationMethod.setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
-                    "hasMockAppLocation" -> {
+                    String(BuildConfig.HAS_MOCK_LOCATION) -> {
                         result.success(mockAppLocator.hasMockAppLocation())
                     }
 
-                    "mockAppLocationList" -> {
+                    String(BuildConfig.MOCK_APP_LOCATION_LIST) -> {
                         result.success(mockAppLocator.mockAppLocationList())
                     }
 
-                    "isMockEnabled" -> {
+                    String(BuildConfig.IS_MOCK_ENABLED) -> {
                         try {
                             result.success(mockAppLocator.isMockEnabled())
                         } catch (e: Exception) {
@@ -67,14 +69,14 @@ class BorneoSecurityPlugin : FlutterPlugin {
         packagesMethod.setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
-                    "installedApps" -> {
+                    String(BuildConfig.INSTALLED_APP_LIST) -> {
                         val arguments = call.arguments as Map<*, *>
                         result.success(packages.installedApps(arguments["fetch_icons"] as Boolean))
                     }
 
-                    "getIcon" -> {
+                    String(BuildConfig.GET_ICON) -> {
                         val arguments = call.arguments as Map<*, *>
-                        val output = packages.getIcon(arguments["package_name"] as String);
+                        val output = packages.getIcon(arguments["package_name"] as String)
                         if (output != null) {
                             result.success(output)
                         } else {
@@ -82,9 +84,9 @@ class BorneoSecurityPlugin : FlutterPlugin {
                         }
                     }
 
-                    "getPackageInfo" -> {
+                    String(BuildConfig.GET_PACKAGE_INFO) -> {
                         val arguments = call.arguments as Map<*, *>
-                        val output = packages.getPackageInfo(arguments["package_name"] as String);
+                        val output = packages.getPackageInfo(arguments["package_name"] as String)
                         if (output != null) {
                             result.success(packages.getPackageInfo(arguments["package_name"] as String))
                         } else {
@@ -104,28 +106,36 @@ class BorneoSecurityPlugin : FlutterPlugin {
         playIntegrityMethod.setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
-                    "initialize" -> {
+                    String(BuildConfig.INITIALIZE_PLAY_INTEGRITY) -> {
                         val arguments = call.arguments as Map<*, *>
                         try {
-                            playIntegrity.initialize((arguments["cloud_project_number"] as Double).toLong()).addOnSuccessListener {
-                                result.success(true)
-                            }.addOnFailureListener { e ->
-                                result.error("play_integrity", e.message, null)
-                            }
+                            playIntegrity.initialize((arguments["cloud_project_number"] as Double).toLong())
+                                .addOnSuccessListener {
+                                    result.success(true)
+                                }
                         } catch (e: Exception) {
                             result.error("play_integrity", e.message, null)
                         }
                     }
 
-                    "getPlayIntegrityToken" -> {
+                    String(BuildConfig.GET_PLAY_INTEGRITY_TOKEN) -> {
                         try {
                             val arguments = call.arguments as Map<*, *>
                             playIntegrity.getPlayIntegrityToken(arguments["hash"] as String)
                                 .addOnSuccessListener { response ->
                                     result.success(response.token())
-                                }.addOnFailureListener { e ->
-                                    result.error("play_integrity", e.message, null)
                                 }
+                        } catch (e: Exception) {
+                            result.error("play_integrity", e.message, null)
+                        }
+                    }
+
+                    String(BuildConfig.GET_DEVICE_ID) -> {
+                        try {
+                            val deviceId = getString(
+                                flutterPluginBinding.applicationContext.contentResolver, ANDROID_ID
+                            )
+                            result.success(deviceId)
                         } catch (e: Exception) {
                             result.error("play_integrity", e.message, null)
                         }
