@@ -41,6 +41,21 @@ class _AppState extends State<App> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            FutureBuilder(
+                future: BorneoPlayIntegrity().getDeviceId(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListTile(
+                      title: const Text("Device ID"),
+                      subtitle: Text(snapshot.data.toString()),
+                    );
+                  } else {
+                    return Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator());
+                  }
+                }),
             ElevatedButton(
               onPressed: () async {
                 final mockedApps = apps
@@ -120,11 +135,102 @@ class _AppState extends State<App> {
                                         children: item
                                             .toMap()
                                             .entries
-                                            .map((e) => ListTile(
-                                                title: Text(e.key),
-                                                subtitle:
-                                                    Text(e.value.toString())))
-                                            .toList(),
+                                            .where((entry) =>
+                                                !entry.key.contains("icon"))
+                                            .map((e) {
+                                          if (e.value
+                                              is List<Map<String, dynamic>>) {
+                                            return Column(
+                                              children: [
+                                                ListTile(
+                                                    title: Text("Certficates")),
+                                                ...List.generate(
+                                                  (e.value as List<
+                                                          Map<String, dynamic>>)
+                                                      .length,
+                                                  (index) {
+                                                    final cert = e.value[index];
+                                                    return ExpansionTile(
+                                                        title: Text(
+                                                            "Certificate ${index + 1}"),
+                                                        children: [
+                                                          ListTile(
+                                                              title:
+                                                                  Text("Hash"),
+                                                              subtitle: Text(
+                                                                  cert['hash'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Signature"),
+                                                              subtitle: Text(
+                                                                  cert['signature'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Subject DN"),
+                                                              subtitle: Text(
+                                                                  cert['subjectDN'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Issuer DN"),
+                                                              subtitle: Text(
+                                                                  cert['issuerDN'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Serial Number"),
+                                                              subtitle: Text(
+                                                                  cert['serialNumber'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Not Before"),
+                                                              subtitle: Text(
+                                                                  cert['notBefore'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Not After"),
+                                                              subtitle: Text(
+                                                                  cert['notAfter'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Public Key Algorithm"),
+                                                              subtitle: Text(
+                                                                  cert['publicKeyAlgorithm'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Public Key Format"),
+                                                              subtitle: Text(
+                                                                  cert['publicKeyFormat'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Public Key"),
+                                                              subtitle: Text(
+                                                                  cert['publicKey'] ??
+                                                                      '')),
+                                                          ListTile(
+                                                              title: Text(
+                                                                  "Public Key Hash"),
+                                                              subtitle: Text(
+                                                                  cert['publicKeyHash'] ??
+                                                                      '')),
+                                                        ]);
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                          return ListTile(
+                                              title: Text(e.key),
+                                              subtitle:
+                                                  Text(e.value.toString()));
+                                        }).toList(),
                                       ),
                                     ),
                                   ).show(context);
