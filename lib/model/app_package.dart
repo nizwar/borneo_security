@@ -81,15 +81,9 @@ class AppPackage {
       installer: map['installer'],
       versionCode: map['versionCode'],
       versionName: map['versionName'],
-      firstInstallTime: map['firstInstallTime'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['firstInstallTime'])
-          : null,
-      lastUpdateTime: map['lastUpdateTime'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['lastUpdateTime'])
-          : null,
-      signingCertificates: List<Signature>.from(
-          (map['signing_certificates'] ?? [])
-              .map((e) => Signature.fromMap(Map<String, dynamic>.from(e)))),
+      firstInstallTime: map['firstInstallTime'] != null ? DateTime.fromMillisecondsSinceEpoch(map['firstInstallTime']) : null,
+      lastUpdateTime: map['lastUpdateTime'] != null ? DateTime.fromMillisecondsSinceEpoch(map['lastUpdateTime']) : null,
+      signingCertificates: List<Signature>.from((map['signing_certificates'] ?? []).map((e) => Signature.fromMap(Map<String, dynamic>.from(e)))),
       permissions: List<String>.from(map['permissions'] ?? []),
     );
   }
@@ -109,7 +103,7 @@ class AppPackage {
       'firstInstallTime': firstInstallTime?.millisecondsSinceEpoch,
       'lastUpdateTime': lastUpdateTime?.millisecondsSinceEpoch,
       'icon': icon,
-      'signing_certificates': signingCertificates,
+      'signing_certificates': signingCertificates.map((cert) => cert.toMap()).toList(),
       'permissions': permissions,
     };
   }
@@ -178,17 +172,11 @@ class Signature {
       subjectDN: map['subjectDN'],
       issuerDN: map['issuerDN'],
       serialNumber: map['serialNumber']?.toString(),
-      notBefore: map['notBefore'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['notBefore'])
-          : null,
-      notAfter: map['notAfter'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['notAfter'])
-          : null,
+      notBefore: map['notBefore'] != null ? DateTime.fromMillisecondsSinceEpoch(map['notBefore']) : null,
+      notAfter: map['notAfter'] != null ? DateTime.fromMillisecondsSinceEpoch(map['notAfter']) : null,
       publicKeyAlgorithm: map['publicKeyAlgorithm'],
       publicKeyFormat: map['publicKeyFormat'],
-      publicKeyEncoded: map['publicKeyEncoded'] != null
-          ? Uint8List.fromList(List<int>.from(map['publicKeyEncoded']))
-          : null,
+      publicKeyEncoded: map['publicKeyEncoded'] != null ? Uint8List.fromList(List<int>.from(map['publicKeyEncoded'])) : null,
       publicKey: map['publicKey'],
       publicKeyHash: map['publicKeyHash'],
     );

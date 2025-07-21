@@ -16,15 +16,18 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  BorneoPlayIntegrity integrityChecker = BorneoPlayIntegrity();
-  BorneoMockLocationSecurity mockChecker = BorneoMockLocationSecurity();
-  BorneoPackages packages = BorneoPackages();
+  BorneoPlayIntegrity integrityChecker = BorneoPlayIntegrity.instance;
+  BorneoMockLocationSecurity mockChecker = BorneoMockLocationSecurity.instance;
+  BorneoPackages packages = BorneoPackages.instance;
 
   List<AppPackage> apps = [];
 
   @override
   void initState() {
-    integrityChecker.initialize(0).catchError((e) => false).then((value) {});
+    integrityChecker
+        .initialize(801850423675)
+        .catchError((e) => false)
+        .then((value) {});
     packages.getInstalledApps(true).then((value) {
       setState(() {
         apps = value;
@@ -42,7 +45,7 @@ class _AppState extends State<App> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             FutureBuilder(
-                future: BorneoPlayIntegrity().getDeviceId(),
+                future: BorneoPlayIntegrity.instance.getDeviceId(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListTile(
@@ -132,12 +135,17 @@ class _AppState extends State<App> {
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,
-                                        children: item
-                                            .toMap()
-                                            .entries
-                                            .where((entry) =>
-                                                !entry.key.contains("icon"))
-                                            .map((e) {
+                                        children: item.toMap().entries.map((e) {
+                                          if (e.value is Uint8List) {
+                                            return ListTile(
+                                              title: Text(e.key),
+                                              subtitle: Image.memory(
+                                                  e.value as Uint8List,
+                                                  height: 100,
+                                                  width: 100,
+                                                  fit: BoxFit.fitHeight),
+                                            );
+                                          }
                                           if (e.value
                                               is List<Map<String, dynamic>>) {
                                             return Column(
