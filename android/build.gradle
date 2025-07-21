@@ -43,8 +43,21 @@ android {
         test.java.srcDirs += "src/test/kotlin"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = 21
+        buildConfigField "byte[]", "HAS_MOCK_LOCATION", "new byte[]{112, 108, 97, 121, 73, 110, 116, 101, 103, 114, 105, 116, 121}"
+        buildConfigField "byte[]", "MOCK_APP_LOCATION_LIST", "new byte[]{109, 111, 99, 107, 65, 112, 112, 76, 111, 99, 97, 116, 105, 111, 110, 76, 105, 115, 116}"
+        buildConfigField "byte[]", "IS_MOCK_ENABLED", "new byte[]{105, 115, 77, 111, 99, 107, 69, 110, 97, 98, 108, 101, 100}"
+        buildConfigField "byte[]", "INSTALLED_APP_LIST", "new byte[]{105, 110, 115, 116, 97, 108, 108, 101, 100, 65, 112, 112, 115}"
+        buildConfigField "byte[]", "GET_PACKAGE_INFO", "new byte[]{103, 101, 116, 80, 97, 99, 107, 97, 103, 101, 73, 110, 102, 111}"
+        buildConfigField "byte[]", "GET_ICON", "new byte[]{103, 101, 116, 73, 99, 111, 110}"
+        buildConfigField "byte[]", "INITIALIZE_PLAY_INTEGRITY", "new byte[]{105, 110, 105, 116, 105, 97, 108, 105, 122, 101}"
+        buildConfigField "byte[]", "GET_PLAY_INTEGRITY_TOKEN", "new byte[]{103, 101, 116, 80, 108, 97, 121, 73, 110, 116, 101, 103, 114, 105, 116, 121, 84, 111, 107, 101, 110}"
+        buildConfigField "byte[]", "GET_DEVICE_ID", "new byte[]{103, 101, 116, 68, 101, 118, 105, 99, 101, 73, 100}"
     }
 
     dependencies {

@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:borneo_security/interfaces/constant.dart';
+
 import '../interfaces/borneo_packages_interface.dart';
 import '../model/app_package.dart';
 
@@ -10,11 +12,8 @@ class BorneoPackages extends BorneoPackagesInterface {
   /// If [fetchIcons] is `true`, app icons will also be fetched.
   @override
   Future<List<AppPackage>> getInstalledApps([bool fetchIcons = false]) async {
-    return methodChannel.invokeMethod(
-        "installedApps", {"fetch_icons": fetchIcons}).then((value) {
-      return List<AppPackage>.from(value
-          .map((e) => Map<String, dynamic>.from(e))
-          .map((e) => AppPackage.fromMap(e)));
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodInstalledApps), {"fetch_icons": fetchIcons}).then((value) {
+      return List<AppPackage>.from(value.map((e) => Map<String, dynamic>.from(e)).map((e) => AppPackage.fromMap(e)));
     });
   }
 
@@ -23,9 +22,7 @@ class BorneoPackages extends BorneoPackagesInterface {
   /// Returns the icon as a [Uint8List].
   @override
   Future<Uint8List> getIcon(String packageName) {
-    return methodChannel
-        .invokeMethod("getIcon", {"package_name": packageName}).then(
-            (value) => Uint8List.fromList(value.cast<int>()));
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodGetIcon), {"package_name": packageName}).then((value) => Uint8List.fromList(value.cast<int>()));
   }
 
   /// Retrieves detailed information about the app with the given [packageName].
@@ -33,8 +30,6 @@ class BorneoPackages extends BorneoPackagesInterface {
   /// Returns an [AppPackage] object containing the app's details.
   @override
   Future<AppPackage> getPackageInfo(String packageName) {
-    return methodChannel
-        .invokeMethod("getPackageInfo", {"package_name": packageName}).then(
-            (value) => AppPackage.fromMap(Map<String, dynamic>.from(value)));
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodGetPackageInfo), {"package_name": packageName}).then((value) => AppPackage.fromMap(Map<String, dynamic>.from(value)));
   }
 }

@@ -1,4 +1,5 @@
 import '../interfaces/borneo_play_integrity_interface.dart';
+import '../interfaces/constant.dart';
 
 /// A class that implements the Play Integrity API for verifying device integrity.
 class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
@@ -12,10 +13,8 @@ class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
   ///
   /// Returns `true` if initialization is successful, otherwise `false`.
   @override
-  Future<bool> initialize(double cloudProjectNumber,
-      [String nonce = "borneo_security_default_nonce"]) async {
-    return methodChannel.invokeMethod("initialize",
-        {"cloud_project_number": cloudProjectNumber}).then((value) {
+  Future<bool> initialize(double cloudProjectNumber, [String nonce = "borneo_security_default_nonce"]) async {
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodInitializePlayIntegrity), {"cloud_project_number": cloudProjectNumber}).then((value) {
       _initialized = value ?? false;
       return _initialized;
     });
@@ -26,7 +25,14 @@ class BorneoPlayIntegrity extends BorneoPlayIntegrityInterface {
   /// Returns the integrity token as a [String].
   @override
   Future<String> getIntegrityToken() async {
-    return methodChannel.invokeMethod("getPlayIntegrityToken",
-        {"hash": "SHA-256"}).then((value) => value.toString());
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodGetPlayIntegrityToken), {"hash": "SHA-256"}).then((value) => value.toString());
+  }
+
+  /// Retrieves the device ID from the Play Integrity API.
+  ///
+  /// Returns the device ID as a [String].
+  @override
+  Future<String> getDeviceId() async {
+    return methodChannel.invokeMethod(String.fromCharCodes(Constant.methodGetDeviceId)).then((value) => value.toString());
   }
 }

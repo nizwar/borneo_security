@@ -23,4 +23,8 @@ abstract class BorneoPlayIntegrityInterface {
   Future<String> getIntegrityToken() async {
     throw UnimplementedError('getIntegrityToken() has not been implemented.');
   }
+
+  Future<String> getDeviceId() async {
+    throw UnimplementedError('deviceId() has not been implemented.');
+  }
 }
