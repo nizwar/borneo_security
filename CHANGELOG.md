@@ -1,3 +1,10 @@
+## 1.3.0
+* Migrate to Singleton
+* Enhance security, can be hard to modify on released APK
+* Add getDeviceID function
+* Old project got troubles with androidx supports
+* Some minors
+
 ## 1.2.0
 * Enhance play integrity (Use StandardIntegrityTokenProvider instead)
 
