@@ -5,17 +5,19 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.core.graphics.drawable.toBitmap
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
+import androidx.core.graphics.createBitmap
 
 
-class BorneoPackages(val context: Context) {
+class BorneoPackages(context: Context) {
     val pm = context.packageManager
 
     fun installedApps(fetchIcons: Boolean): List<HashMap<String, Any?>> {
@@ -154,12 +156,27 @@ class BorneoPackages(val context: Context) {
 
     private fun drawableToByteArray(drawable: Drawable): ByteArray? {
         try {
-            val bitmap = drawable.toBitmap(256, 256)
+            if (drawable is BitmapDrawable) {
+                // If the drawable is already a BitmapDrawable, directly access its bitmap
+                val bitmap = drawable.bitmap
+                ByteArrayOutputStream().use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    return stream.toByteArray()
+                }
+            }
+
+            // For other drawable types, create a new Bitmap and draw the drawable on it
+            val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+
             ByteArrayOutputStream().use { stream ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 return stream.toByteArray()
             }
         } catch (e: Exception) {
+            // Log the exception or handle it as needed
             return null
         }
     }

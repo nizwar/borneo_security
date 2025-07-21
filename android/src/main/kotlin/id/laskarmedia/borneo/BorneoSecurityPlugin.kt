@@ -132,9 +132,7 @@ class BorneoSecurityPlugin : FlutterPlugin {
 
                     String(BuildConfig.GET_DEVICE_ID) -> {
                         try {
-                            val deviceId = getString(
-                                flutterPluginBinding.applicationContext.contentResolver, ANDROID_ID
-                            )
+                            val deviceId = getString(flutterPluginBinding.applicationContext.contentResolver, ANDROID_ID)
                             result.success(deviceId)
                         } catch (e: Exception) {
                             result.error("play_integrity", e.message, null)
