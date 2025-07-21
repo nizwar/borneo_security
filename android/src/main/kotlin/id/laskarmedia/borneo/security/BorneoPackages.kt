@@ -14,7 +14,6 @@ import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import androidx.core.graphics.createBitmap
 
 
 class BorneoPackages(context: Context) {
@@ -166,7 +165,7 @@ class BorneoPackages(context: Context) {
             }
 
             // For other drawable types, create a new Bitmap and draw the drawable on it
-            val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             drawable.setBounds(0, 0, canvas.width, canvas.height)
             drawable.draw(canvas)
